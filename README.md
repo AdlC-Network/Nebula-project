@@ -1,3 +1,13 @@
+<p align="center"><img src="https://modrealms.net/logo.png" width="150px" height="150px" alt="modrealms logo"></p>
+
+<h1 align="center">ModRealms Launcher</h1>
+
+<em><h5 align="center"><a href="https://github.com/dscalzi/Nebula">Modified from HeliosLauncher's Nebula</a></h5></em>
+
+<!-- [<p align="center"><img src="https://img.shields.io/travis/dscalzi/HeliosLauncher.svg?style=for-the-badge" alt="travis">](https://travis-ci.org/dscalzi/HeliosLauncher) [<img src="https://img.shields.io/github/downloads/dscalzi/HeliosLauncher/total.svg?style=for-the-badge" alt="downloads">](https://github.com/dscalzi/HeliosLauncher/releases) <img src="https://forthebadge.com/images/badges/winter-is-coming.svg"  height="28px" alt="stark"></p> -->
+
+<p align="center">Creates the server files for the <strong>ModRealms Launcher</strong>, also containing a few fixes that weren't included in the upstream build.</p>
+
 # Nebula
 
 Generate a distribution.json for Helios. Documentation on this format can be found [here][distro.md].
