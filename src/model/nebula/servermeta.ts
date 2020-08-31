@@ -1,4 +1,4 @@
-import { Server } from 'helios-distribution-types'
+import { MRServer } from '../../object/MRServer'
 
 export interface ServerMetaOptions {
     forgeVersion?: string
@@ -44,14 +44,14 @@ export function getDefaultServerMeta(id: string, version: string, options?: Serv
 export interface ServerMeta {
 
     meta: {
-        version: Server['version']
-        name: Server['name']
-        description: Server['description']
-        address: Server['address']
-        discord?: Server['discord']
-        mainServer: Server['mainServer']
-        serverCode: ''
-        autoconnect: Server['autoconnect']
+        version: MRServer['version']
+        name: MRServer['name']
+        description: MRServer['description']
+        address: MRServer['address']
+        discord?: MRServer['discord']
+        mainServer: MRServer['mainServer']
+        serverCode: MRServer['serverCode']
+        autoconnect: MRServer['autoconnect']
     }
 
     forge?: {

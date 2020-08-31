@@ -1,5 +1,5 @@
 import { lstat, mkdirs, pathExists, readdir, readFile, writeFile } from 'fs-extra'
-import { Server, Module } from 'helios-distribution-types'
+import { Module } from 'helios-distribution-types'
 import { dirname, join, resolve as resolvePath } from 'path'
 import { resolve as resolveUrl } from 'url'
 import { VersionSegmentedRegistry } from '../../../util/VersionSegmentedRegistry'
@@ -8,9 +8,10 @@ import { BaseModelStructure } from './basemodel.struct'
 import { MiscFileStructure } from './module/file.struct'
 import { LiteModStructure } from './module/litemod.struct'
 import { LibraryStructure } from './module/library.struct'
+import { MRServer } from '../../../object/MRServer'
 import { MinecraftVersion } from '../../../util/MinecraftVersion'
 
-export class ServerStructure extends BaseModelStructure<Server> {
+export class ServerStructure extends BaseModelStructure<MRServer> {
 
     private readonly ID_REGEX = /(.+-(.+)$)/
     private readonly SERVER_META_FILE = 'servermeta.json'
@@ -26,7 +27,7 @@ export class ServerStructure extends BaseModelStructure<Server> {
         return 'ServerStructure'
     }
 
-    public async getSpecModel(): Promise<Server[]> {
+    public async getSpecModel(): Promise<MRServer[]> {
         if (this.resolvedModels == null) {
             this.resolvedModels = await this._doSeverRetrieval()
         }
@@ -45,6 +46,7 @@ export class ServerStructure extends BaseModelStructure<Server> {
             address?: string
             version?: string
             mainServer?: boolean
+            serverCode?: boolean
             autoConnect?: boolean
         }
     ): Promise<void> {
@@ -90,9 +92,9 @@ export class ServerStructure extends BaseModelStructure<Server> {
 
     }
 
-    private async _doSeverRetrieval(): Promise<Server[]> {
+    private async _doSeverRetrieval(): Promise<MRServer[]> {
 
-        const accumulator: Server[] = []
+        const accumulator: MRServer[] = []
         const files = await readdir(this.containerDirectory)
         for (const file of files) {
             const absoluteServerRoot = resolvePath(this.containerDirectory, file)
@@ -181,6 +183,7 @@ export class ServerStructure extends BaseModelStructure<Server> {
                     minecraftVersion: match[2],
                     ...(serverMeta.meta.discord ? {discord: serverMeta.meta.discord} : {}),
                     mainServer: serverMeta.meta.mainServer,
+                    serverCode: serverMeta.meta.serverCode,
                     autoconnect: serverMeta.meta.autoconnect,
                     modules
                 })
