@@ -115,7 +115,7 @@ export abstract class ModuleStructure extends BaseModelStructure<Module> {
 
         if (await pathExists(scanDirectory)) {
             const files = await readdir(scanDirectory)
-            for (const file of files) {
+            for (const file of files.sort(((a, b) => a.localeCompare(b, undefined, {sensitivity: 'base'})))) {
                 const filePath = resolve(scanDirectory, file)
                 const stats = await lstat(filePath)
                 if (stats.isFile()) {
