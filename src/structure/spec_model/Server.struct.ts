@@ -1,17 +1,16 @@
 import { lstat, mkdirs, pathExists, readdir, readFile, writeFile } from 'fs-extra'
-import { Module } from 'helios-distribution-types'
+import { Server, Module } from 'helios-distribution-types'
 import { dirname, join, resolve as resolvePath } from 'path'
 import { resolve as resolveUrl } from 'url'
-import { VersionSegmentedRegistry } from '../../../util/VersionSegmentedRegistry'
-import { ServerMeta, getDefaultServerMeta, ServerMetaOptions } from '../../nebula/servermeta'
-import { BaseModelStructure } from './basemodel.struct'
-import { MiscFileStructure } from './module/file.struct'
-import { LiteModStructure } from './module/litemod.struct'
-import { LibraryStructure } from './module/library.struct'
-import { MRServer } from '../../../object/MRServer'
-import { MinecraftVersion } from '../../../util/MinecraftVersion'
+import { VersionSegmentedRegistry } from '../../util/VersionSegmentedRegistry'
+import { ServerMeta, getDefaultServerMeta, ServerMetaOptions } from '../../model/nebula/servermeta'
+import { BaseModelStructure } from './BaseModel.struct'
+import { MiscFileStructure } from './module/File.struct'
+import { LiteModStructure } from './module/LiteMod.struct'
+import { LibraryStructure } from './module/Library.struct'
+import { MinecraftVersion } from '../../util/MinecraftVersion'
 
-export class ServerStructure extends BaseModelStructure<MRServer> {
+export class ServerStructure extends BaseModelStructure<Server> {
 
     private readonly ID_REGEX = /(.+-(.+)$)/
     private readonly SERVER_META_FILE = 'servermeta.json'
@@ -27,7 +26,7 @@ export class ServerStructure extends BaseModelStructure<MRServer> {
         return 'ServerStructure'
     }
 
-    public async getSpecModel(): Promise<MRServer[]> {
+    public async getSpecModel(): Promise<Server[]> {
         if (this.resolvedModels == null) {
             this.resolvedModels = await this._doSeverRetrieval()
         }
@@ -40,14 +39,6 @@ export class ServerStructure extends BaseModelStructure<MRServer> {
         options: {
             forgeVersion?: string
             liteloaderVersion?: string
-            name?: string
-            description?: string
-            icon?: string
-            address?: string
-            version?: string
-            mainServer?: boolean
-            serverCode?: boolean
-            autoConnect?: boolean
         }
     ): Promise<void> {
         const effectiveId = `${id}-${minecraftVersion}`
@@ -92,9 +83,9 @@ export class ServerStructure extends BaseModelStructure<MRServer> {
 
     }
 
-    private async _doSeverRetrieval(): Promise<MRServer[]> {
+    private async _doSeverRetrieval(): Promise<Server[]> {
 
-        const accumulator: MRServer[] = []
+        const accumulator: Server[] = []
         const files = await readdir(this.containerDirectory)
         for (const file of files) {
             const absoluteServerRoot = resolvePath(this.containerDirectory, file)
@@ -115,11 +106,7 @@ export class ServerStructure extends BaseModelStructure<MRServer> {
                 for (const subFile of subFiles) {
                     const caseInsensitive = subFile.toLowerCase()
                     if (caseInsensitive.endsWith('.jpg') || caseInsensitive.endsWith('.png')) {
-                        let extension = ''
-                        if(this.baseUrl.includes('gitlab')){
-                            extension = '?job=build'
-                        }
-                        iconUrl = resolveUrl(this.baseUrl, join(relativeServerRoot, subFile) + extension)
+                        iconUrl = resolveUrl(this.baseUrl, join(relativeServerRoot, subFile))
                     }
                 }
 
@@ -183,7 +170,6 @@ export class ServerStructure extends BaseModelStructure<MRServer> {
                     minecraftVersion: match[2],
                     ...(serverMeta.meta.discord ? {discord: serverMeta.meta.discord} : {}),
                     mainServer: serverMeta.meta.mainServer,
-                    serverCode: serverMeta.meta.serverCode,
                     autoconnect: serverMeta.meta.autoconnect,
                     modules
                 })
