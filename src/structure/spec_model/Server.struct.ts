@@ -1,5 +1,5 @@
 import { lstat, mkdirs, pathExists, readdir, readFile, writeFile } from 'fs-extra'
-import { Server, Module } from 'helios-distribution-types'
+import { Module } from 'helios-distribution-types'
 import { dirname, join, resolve as resolvePath } from 'path'
 import { resolve as resolveUrl } from 'url'
 import { VersionSegmentedRegistry } from '../../util/VersionSegmentedRegistry'
@@ -9,8 +9,9 @@ import { MiscFileStructure } from './module/File.struct'
 import { LiteModStructure } from './module/LiteMod.struct'
 import { LibraryStructure } from './module/Library.struct'
 import { MinecraftVersion } from '../../util/MinecraftVersion'
+import { MRServer } from '../../object/MRServer'
 
-export class ServerStructure extends BaseModelStructure<Server> {
+export class ServerStructure extends BaseModelStructure<MRServer> {
 
     private readonly ID_REGEX = /(.+-(.+)$)/
     private readonly SERVER_META_FILE = 'servermeta.json'
@@ -26,7 +27,7 @@ export class ServerStructure extends BaseModelStructure<Server> {
         return 'ServerStructure'
     }
 
-    public async getSpecModel(): Promise<Server[]> {
+    public async getSpecModel(): Promise<MRServer[]> {
         if (this.resolvedModels == null) {
             this.resolvedModels = await this._doSeverRetrieval()
         }
@@ -46,7 +47,7 @@ export class ServerStructure extends BaseModelStructure<Server> {
         const relativeServerRoot = join(this.relativeRoot, effectiveId)
 
         if (await pathExists(absoluteServerRoot)) {
-            this.logger.error('Server already exists! Aborting.')
+            this.logger.error('MRServer already exists! Aborting.')
             return
         }
 
@@ -83,9 +84,9 @@ export class ServerStructure extends BaseModelStructure<Server> {
 
     }
 
-    private async _doSeverRetrieval(): Promise<Server[]> {
+    private async _doSeverRetrieval(): Promise<MRServer[]> {
 
-        const accumulator: Server[] = []
+        const accumulator: MRServer[] = []
         const files = await readdir(this.containerDirectory)
         for (const file of files) {
             const absoluteServerRoot = resolvePath(this.containerDirectory, file)
@@ -94,7 +95,7 @@ export class ServerStructure extends BaseModelStructure<Server> {
 
                 const match = this.ID_REGEX.exec(file)
                 if (match == null) {
-                    this.logger.warn(`Server directory ${file} does not match the defined standard.`)
+                    this.logger.warn(`MRServer directory ${file} does not match the defined standard.`)
                     this.logger.warn('All server ids must end with -<minecraft version> (ex. -1.12.2)')
                     continue
                 }
@@ -170,6 +171,7 @@ export class ServerStructure extends BaseModelStructure<Server> {
                     minecraftVersion: match[2],
                     ...(serverMeta.meta.discord ? {discord: serverMeta.meta.discord} : {}),
                     mainServer: serverMeta.meta.mainServer,
+                    serverCode: serverMeta.meta.serverCode,
                     autoconnect: serverMeta.meta.autoconnect,
                     modules
                 })
